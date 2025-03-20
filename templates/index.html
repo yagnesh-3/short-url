@@ -1,21 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>URL Shortener</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #4A90E2, #D0021B);
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4A90E2;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #357ABD;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #27ae60;
+            word-wrap: break-word;
+        }
+
+        .short-url {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .short-url a {
+            text-decoration: none;
+            color: #D0021B;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .short-url a:hover {
+            text-decoration: underline;
+        }
+
+        .copy-btn {
+            padding: 8px 12px;
+            background: #27ae60;
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #1e8449;
+        }
+    </style>
 </head>
+
 <body>
-    <form action="/" method="post">
-        <label for="long_url">Enter short URL</label>
-        <input type="text" name="long_url" id="long_url">
-        <br>
-        <label for="short_url">Enter short URL</label>
-        <input type="text" name="short_url" id="short_url">
-        <br>
-        <button type="submit">Get short Url</button>
-    </form>
-    <h1>{{par[0]}}</h1>
-    <h1>{{par[1]}}</h1>
+
+    <div class="container">
+        <h2>URL Shortener</h2>
+        <form action="/" method="post">
+            <label for="long_url">Enter URL</label>
+            <input type="text" name="long_url" id="long_url" placeholder="Enter your long URL" required>
+
+            <label for="short_url">Enter Custom Short URL</label>
+            <input type="text" name="short_url" id="short_url" placeholder="Enter a short name" required>
+
+            <button type="submit">Generate Short URL</button>
+        </form>
+
+        {% if par[0] %}
+        <div class="result">{{ par[0] }}</div>
+        {% endif %}
+
+        {% if par[1] %}
+        <div class="short-url">
+            <a id="short-link" href="{{ request.url_root }}{{ par[1] }}" target="_blank">
+                {{ request.url_root }}{{ par[1] }}
+            </a>
+            <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            var link = document.getElementById("short-link").href;  // Get the short URL
+            navigator.clipboard.writeText(link).then(() => {
+                alert("Copied to clipboard: " + link);  // Show confirmation
+            }).catch(err => {
+                console.error("Failed to copy: ", err);
+            });
+        }
+    </script>
+
 </body>
+
 </html>
