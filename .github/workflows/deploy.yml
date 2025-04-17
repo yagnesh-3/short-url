@@ -44,12 +44,7 @@ jobs:
     needs: build
 
     steps:
-      # Trigger Render deploy for Frontend
-      - name: Trigger Render Deploy (Frontend)
+      # Trigger Render deploy for the full-stack Flask app (Frontend + Backend)
+      - name: Trigger Render Deploy
         run: |
-          curl -X POST ${{ secrets.RENDER_HOOK_FRONTEND }}
-
-      # Trigger Render deploy for Backend
-      - name: Trigger Render Deploy (Backend)
-        run: |
-          curl -X POST ${{ secrets.RENDER_HOOK_BACKEND }}
+          curl -X POST ${{ secrets.RENDER_HOOK }}
