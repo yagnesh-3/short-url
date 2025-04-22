@@ -2,21 +2,19 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
-import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
+from wtforms.validators import InputRequired, Length, EqualTo
 import os
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
-
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-urls = {}
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,7 +48,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired()])
     submit = SubmitField('Login')
 
-@app.route("/register",methods = ['GET','POST'])
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -62,20 +60,19 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route("/login",methods = ['GET','POST'])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    form  = LoginForm()
+    form = LoginForm()
     print("called")
     if form.validate_on_submit():
-        user = User.query.filter_by(username = form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password,form.password.data):
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('dashboard'))
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('dashboard'))
         else:
-            flash('Invalid Username or password','danger')
-    return render_template('login.html',form = form)
-
-
+            flash('Invalid Username or password', 'danger')
+    return render_template('login.html', form=form)
 
 @app.route('/logout')
 @login_required
@@ -87,7 +84,6 @@ def logout():
 @login_required
 def dashboard():
     user_urls = URL.query.filter_by(user_id=current_user.id).all()
-    print(f"links: {user_urls}")
     return render_template('dashboard.html', urls=user_urls)
 
 @app.route('/edit/<int:id>', methods=['GET'])
@@ -121,7 +117,7 @@ def delete_url(url_id):
     if url.user_id != current_user.id:
         flash("You don't have permission to delete this URL", "danger")
         return redirect(url_for('dashboard'))
-    
+
     db.session.delete(url)
     db.session.commit()
     flash("URL deleted successfully!", "success")
@@ -133,7 +129,7 @@ def index():
     if request.method == 'POST':
         long_url = request.form['long_url']
         short_url = request.form['short_url']
-        
+
         if not long_url.startswith(('http://', 'https://')):
             long_url = 'https://' + long_url
 
@@ -152,7 +148,6 @@ def index():
 @app.route('/<short_url>')
 def redirect_url(short_url):
     url = URL.query.filter_by(short_url=short_url).first()
-    print(url)
     if url:
         return redirect(url.long_url)
     else:
@@ -164,11 +159,11 @@ def redirect_url(short_url):
 def create():
     original_url = request.form['original_url']
     custom_short = request.form.get('custom_short_url', '').strip()
+
     if URL.query.filter_by(short_url=custom_short).first():
         flash('Short URL already exists. Try another.', 'danger')
         return redirect(url_for('dashboard'))
 
-    # Save to DB using current_user.id for user association
     new_url = URL(long_url=original_url, short_url=custom_short, user_id=current_user.id)
     db.session.add(new_url)
     db.session.commit()
@@ -176,9 +171,6 @@ def create():
     flash(f"Short URL created: {request.url_root}{custom_short}", 'success')
     return redirect(url_for('dashboard'))
 
-
 if __name__ == "__main__":
-    with open("urls.json","r") as f:
-        urls= json.load(f)
-    port = int(os.environ.get("PORT", 5080))
-    app.run(debug=False, host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(debug=True, host="0.0.0.0", port=port)
