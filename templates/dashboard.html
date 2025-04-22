@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block heading %}Welcome to your Dashboard{% endblock %}
+
+{% block content %}
+
+{% if edit_url %}
+<form method="POST" action="{{ url_for('update_url', id=edit_url.id) }}" class="edit-form">
+    <label for="original_url">Enter Original URL:</label>
+    <input type="url" name="original_url" id="original_url" required value="{{ edit_url.long_url }}">
+
+    <label for="custom_short_url">Custom Short URL:</label>
+    <input type="text" name="custom_short_url" id="custom_short_url" value="{{ edit_url.short_url }}">
+
+    <button type="submit">Update Short URL</button>
+</form>
+{% endif %}
+
+{% if urls %}
+<div class="result">
+    <h3>Your Shortened URLs</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 8px; border: 1px solid #ccc;">Original URL</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">Short URL</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for url in urls %}
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ccc;">
+                    <a href="{{ url.long_url }}" target="_blank">{{ url.long_url }}</a>
+                </td>
+                <td style="padding: 8px; border: 1px solid #ccc;">
+                    <a href="{{ request.host_url }}{{ url.short_url }}" target="_blank">
+                        {{ request.host_url }}{{ url.short_url }}
+                    </a>
+                </td>
+                <td style="padding: 8px; border: 1px solid #ccc;">
+                    <form method="GET" action="/edit/{{ url.id }}" style="display: inline;">
+                        <button type="submit" class="copy-btn">Edit</button>
+                    </form>
+
+                    <form method="POST" action="/delete/{{ url.id }}" style="display: inline;">
+                        <button type="submit" class="copy-btn" style="background: #e74c3c;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>You have not created any short URLs yet.</p>
+{% endif %}
+
+{% endblock %}

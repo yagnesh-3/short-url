@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit URL | URL Shortener{% endblock %}
+{% block heading %}Edit Your Short URL{% endblock %}
+
+{% block content %}
+<form action="/update/{{ url.short }}" method="post">
+    <label for="long_url">Original URL</label>
+    <input type="text" name="long_url" id="long_url" value="{{ url.long }}" required>
+
+    <label for="short_url">Short URL</label>
+    <input type="text" name="short_url" id="short_url" value="{{ url.short }}" required>
+
+    <button type="submit">Update</button>
+</form>
+{% endblock %}

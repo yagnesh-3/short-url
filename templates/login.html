@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Login | URL Shortener{% endblock %}
+{% block heading %}Login{% endblock %}
+
+{% block content %}
+<form method="POST" action="/login">
+    {{ form.hidden_tag() }}
+
+    <label for="username">Username</label>
+    {{ form.username }}
+
+    <label for="password">Password</label>
+    {{ form.password }}
+
+    <button type="submit">Login</button>
+</form>
+
+<p>Don't have an account? <a href="/register">Register</a></p>
+{% endblock %}

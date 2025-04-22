@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | URL Shortener{% endblock %}
+{% block heading %}Register{% endblock %}
+
+{% block content %}
+<form action="/register" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username" required>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required>
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a href="/login">Login</a></p>
+{% endblock %}
