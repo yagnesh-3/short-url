@@ -38,5 +38,5 @@ def redirect_url(short_url):
 if __name__ == "__main__":
     with open("urls.json","r") as f:
         urls= json.load(f)
-    app.run(host="0.0.0.0", port=5080)
+    app.run( port=5080)
 
