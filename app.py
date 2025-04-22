@@ -179,4 +179,5 @@ def create():
 if __name__ == "__main__":
     with open("urls.json","r") as f:
         urls= json.load(f)
-    app.run(debug=True, port=5080)
+    port = int(os.environ.get("PORT", 5080))
+    app.run(debug=False, host="0.0.0.0", port=port)
