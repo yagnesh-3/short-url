@@ -170,7 +170,14 @@ def create():
 
     flash(f"Short URL created: {request.url_root}{custom_short}", 'success')
     return redirect(url_for('dashboard'))
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    users = User.query.all()
+    users_data = [{'id': user.id, 'username': user.username} for user in users]
+    return {'users': users_data}, 200
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    # app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=True, port=port)
